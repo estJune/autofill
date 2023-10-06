@@ -3,26 +3,25 @@
 #include "dlb.h"
 
 
-extern dlb* new_dlb()
+dlb* new_dlb()
 {
     dlb* d;
     if (d = malloc(sizeof(dlb) == NULL))
         return NULL;
     d->count = 0;
-    d->curr_key_len = 0;
     return d;
 }
 
-extern void free_dlb(dlb* d)
+void free_dlb(dlb* d)
 {
     dlb_node* root;
     if(d == NULL)
         return;
     root = d->root;
-    (void) free(d);
     if (root == NULL)
         return;
     _free_dlb(root);
+    (void) free(d);
     d = NULL;
 }
 
@@ -40,36 +39,51 @@ static void _free_dlb(dlb_node* curr)
 }
 
 
-extern void add(dlb* d, const char* key, unsigned int length)
+int add(dlb* d, const char* key, unsigned int len)
 {
-    if (key == NULL) 
-        return;
-    if (d == NULL) {
-        return;
+    long ret = 0;
+    if (key == NULL || d == NULL) 
+        return ERRINIT;
+    if (d->root == NULL && d->root = new_dlb_node() == NULL)
+        return ERRNOMEM;
+    if (d->count == 0) {
+        set_letter(d->root, key[0]);
+        (void) d->count++;
     }
-    d->curr_key_len = length;
-    _add(d, key, 0);
-}
+    if (ret = _add(d->root, key, 0, len) == SUCC)
+        (void) d->count++;
+    return ret;
+}   
 
-static void _add(dlb_node* curr, const char* key, int index)
+
+static int _add(dlb_node* curr, const char* key, unsigned int index, unsigned int len)
 {
     dlb_node* new_node, right, down;
     char new_letter;
 
-    if (get_letter(curr) != key[index] && right = get_right(new_node) != NULL) {
-        _add(right, );
-    } else if (get_letter(curr) != key[index] && right = get_right(curr)) {
-        _add(right, key, index);
-    } else if (index == curr_key_length && new_node = new_dlb_node('^') != NULL) {
-        set_right(new_node, curr);
-        (void) count++;
-        return;
-    } else if(get_letter(curr) == key[index] && down = get_down(curr)) {
-        if (!down) {
+    if (index == len) {
+        return SUCC;
+    } else {
+        new_letter = key[index];
+    }
 
-        } else{
+    if (get_letter(curr) == new_letter && down = get_down(curr) != NULL) {
+        return _add(down, key, ++index, len);
+    } else if (get_letter(curr) != new_letter && right = get_right(curr) != NULL) {
+        return _add(right, key, index, len);
+    }
 
-        }
-        _add(down, key, ++index);
-    } 
+    if (new_node = new_dlb_node() == NULL) {
+        return ERRNOMEM;
+    } else {
+        set_letter(new_node, new_letter);
+    }
+
+    if (right == NULL) {
+        set_right(curr, new_node);
+        return _add(new_node, key, index, len);
+    } else {
+        set_down(curr, new_node);
+        return _add(new_node, key, ++index, len);
+    }
 }
