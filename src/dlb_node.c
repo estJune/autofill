@@ -12,12 +12,10 @@ dlb_node* new_dlb_node()
     return new_node;
 }
 
-int free_dlb_node(dlb_node* node)
+void free_dlb_node(dlb_node* node)
 {
-    if (node == NULL)
-        return SUCC;
     if (node->right != NULL || node->down != NULL)
-        return ERMEMLEAK;
+        return;
     (void) free(node);
 }
 

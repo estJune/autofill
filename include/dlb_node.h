@@ -24,7 +24,7 @@ typedef struct _dlb_node{
 
 dlb_node* new_dlb_node();
 
-int free_dlb_node(dlb_node*)
+void free_dlb_node(dlb_node*)
 
 void set_right(dlb_node*, dlb_node*);
 
@@ -37,12 +37,5 @@ dlb_node* get_right(dlb_node*);
 dlb_node* get_down(dlb_node*);
 
 char get_letter(dlb_node*);
-
-#endif
-
-#ifndef DLB_NODE_ERRORS
-#define DLB_NODE_ERRORS
-
-enum dlb_node_errors {SUCC = 0, ERMEMLEAK = -1}
 
 #endif
