@@ -1,5 +1,4 @@
-/**
- * @file dlb_node.h
+/*
  * @author Derrick Hicks 
  * @brief 
  * @version 0.1
@@ -20,19 +19,21 @@ typedef struct _dlb_node{
 
 #endif
 
-#ifndef DLBFUNCS
-#define DLBFUNCS
+#ifndef DLB_NODE_FUNCS
+#define DLB_NODE_FUNCS
 
-static inline dlb_node* new_dlb_node(char);
+dlb_node* new_dlb_node();
 
-static inline void set_right(dlb_node*, dlb_node*);
+void set_right(dlb_node*, dlb_node*);
 
-static inline void set_down(dlb_node*, dlb_node*);
+void set_down(dlb_node*, dlb_node*);
 
-static inline dlb_node* get_right(dlb_node*);
+void set_letter(dlb_node*, char);
 
-static inline dlb_node* get_down(dlb_node*);
+dlb_node* get_right(dlb_node*);
 
-static inline char get_letter(dlb_node*);
+dlb_node* get_down(dlb_node*);
+
+char get_letter(dlb_node*);
 
 #endif
