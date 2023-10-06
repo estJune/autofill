@@ -3,10 +3,10 @@
 
 dlb_node* new_dlb_node()
 {
-    dlb_node* new_node = malloc(sizeof(dlb_node));
-    if (new_node == NULL)
+    dlb_node* new_node;
+    if (new_node = malloc(sizeof(dlb_node)) == NULL)
         return NULL;
-    new_node->let = ' ';
+    new_node->let = '\0';
     new_node->right = NULL;
     new_node->down = NULL;
     return new_node;
@@ -17,6 +17,7 @@ void free_dlb_node(dlb_node* node)
     if (node->right != NULL || node->down != NULL)
         return;
     (void) free(node);
+    node = NULL;
 }
 
 void set_right(dlb_node* node, dlb_node* right)
