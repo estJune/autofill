@@ -43,6 +43,6 @@ char get_letter(dlb_node*);
 #ifndef DLB_NODE_ERRORS
 #define DLB_NODE_ERRORS
 
-enum errors {SUCC = 0, ERMEMLEAK = -1}
+enum dlb_node_errors {SUCC = 0, ERMEMLEAK = -1}
 
 #endif
