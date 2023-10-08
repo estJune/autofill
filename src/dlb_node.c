@@ -14,8 +14,6 @@ dlb_node* new_dlb_node()
 
 void free_dlb_node(dlb_node* node)
 {
-    if (node->right != NULL || node->down != NULL)
-        return;
     (void) free(node);
     node = NULL;
 }

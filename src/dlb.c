@@ -41,49 +41,66 @@ static void _free_dlb(dlb_node* curr)
 
 int add(dlb* d, const char* key, unsigned int len)
 {
-    long ret = 0;
+    int res = 0;
     if (key == NULL || d == NULL) 
         return ERRINIT;
-    if (d->root == NULL && d->root = new_dlb_node() == NULL)
-        return ERRNOMEM;
-    if (d->count == 0) {
-        set_letter(d->root, key[0]);
-        (void) d->count++;
-    }
-    if (ret = _add(d->root, key, 0, len) == SUCC)
-        (void) d->count++;
-    return ret;
+    d->root = _add(d->root, key, 0, &res);
+    return res;
 }   
 
 
-static int _add(dlb_node* curr, const char* key, unsigned int index, unsigned int len)
+static dlb_node* _add(dlb_node* node, const char* key, unsigned int index, int* res)
 {
-    dlb_node* new_node, right, down;
-    char new_letter;
+    dlb_node* right = NULL;
+    dlb_node* down = NULL;
+    char node_let = get_letter(curr);
+    char key_let = key[index];
 
-    if (index == len) {
-        return SUCC;
+    if (key_let == '\0' && (node != NULL || node = new_dlb_node() != NULL) ) {
+        set_letter(node, '^');
+        *res = 1;
+        return node;
+    } else if (node == NULL && node = new_dlb_node() != NULL) {
+        set_letter(node, key_let);
+        set_down(node, _add(NULL, key, index, res));
+    } else if (node_let == key_let && down = get_down(node) != NULL) {
+        set_down(node, _add(down, key, ++index, res));
+    } else if (node_let != key_let && right = get_right(node) != NULL) {
+        set_right(node, _add(right, key, index, res));
+    } else if (right = new_dlb_node() != NULL && down = _add(NULL, key, ++index, res)) {
+        set_letter(right, key_let);
+        set_right(node, right);
+        set_down(right, down);
     } else {
-        new_letter = key[index];
+        free_dlb_node(right);
+        free_dlb_node(down);
     }
+    
+    return node;
+}
 
-    if (get_letter(curr) == new_letter && down = get_down(curr) != NULL) {
-        return _add(down, key, ++index, len);
-    } else if (get_letter(curr) != new_letter && right = get_right(curr) != NULL) {
-        return _add(right, key, index, len);
-    }
 
-    if (new_node = new_dlb_node() == NULL) {
-        return ERRNOMEM;
+extern int is_prefix(dlb* d, char* key, unsigned int index, unsigned int len)
+{
+    if (d = NULL || key == NULL || d->count == 0)
+        return ERRINIT;
+
+    return _is_prefix(d->root, key, index, len);
+}
+
+
+static int _is_prefix(dlb_node* node, const char* key, unsigned int index, unsigned len)
+{
+    dlb_node* right = NULL;
+    dlb_node* down = NULL;
+
+    if (index == len && (get_down(node) != NULL || get_right(node) != NULL)) {
+        return 1;
+    } else if (get_letter(node) == key[index] && down = get_down(node) != NULL) {
+        return _is_prefix(down, key, ++index, len);
+    } else if (right = get_right(node) != NULL) {
+        return _is_prefix(right, key, index, len);
     } else {
-        set_letter(new_node, new_letter);
-    }
-
-    if (right == NULL) {
-        set_right(curr, new_node);
-        return _add(new_node, key, index, len);
-    } else {
-        set_down(curr, new_node);
-        return _add(new_node, key, ++index, len);
+        return 0;
     }
 }

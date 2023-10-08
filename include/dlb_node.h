@@ -13,8 +13,8 @@
 
 typedef struct _dlb_node{
     char let;
-    struct dlb_node* right;
-    struct dlb_node* down;
+    struct _dlb_node* right;
+    struct _dlb_node* down;
 } dlb_node;
 
 #endif
