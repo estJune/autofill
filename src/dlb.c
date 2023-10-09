@@ -40,7 +40,7 @@ static void _free_dlb(dlb_node* curr)
 }
 
 
-int add(dlb* d, const char* key, unsigned int len)
+int add(dlb* d, const char* key)
 {
     int res = 0;
     if (key == NULL || d == NULL) 
@@ -83,23 +83,24 @@ static dlb_node* _add(dlb_node* node, const char* key, unsigned int index, int* 
 }
 
 
-extern int is_prefix(dlb* d, char* key, unsigned int index, unsigned int len)
+extern int is_prefix(dlb* d, char* key)
 {
     if (d = NULL || key == NULL || d->count == 0)
         return ERRINIT;
 
-    return _is_prefix(d->root, key, index, len);
+    return _is_prefix(d->root, key, 0);
 }
 
 
-static int _is_prefix(dlb_node* node, const char* key, unsigned int index, unsigned len)
+static int _is_prefix(dlb_node* node, const char* key, unsigned int index)
 {
     dlb_node* right = NULL;
     dlb_node* down = NULL;
+    char key_let = key[index];
 
-    if (index == len && (get_down(node) != NULL || get_right(node) != NULL)) {
+    if (key_let == '^' && (get_down(node) != NULL || get_right(node) != NULL)) {
         return 1;
-    } else if (get_letter(node) == key[index] && down = get_down(node) != NULL) {
+    } else if (get_letter(node) == key_let && down = get_down(node) != NULL) {
         return _is_prefix(down, key, ++index, len);
     } else if (right = get_right(node) != NULL) {
         return _is_prefix(right, key, index, len);
