@@ -21,7 +21,7 @@ static void _free_dlb(dlb_node*);
 
 extern void add(dlb*, const char*, unsigned int);
 
-static void _add(dlb_node*, const char*, unsigned int, unsigned int);
+static void _add(dlb_node*, const char*, unsigned int, int*);
 
 #endif 
 

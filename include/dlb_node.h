@@ -24,7 +24,7 @@ typedef struct _dlb_node{
 
 dlb_node* new_dlb_node();
 
-void free_dlb_node(dlb_node*)
+void free_dlb_node(dlb_node*);
 
 void set_right(dlb_node*, dlb_node*);
 
