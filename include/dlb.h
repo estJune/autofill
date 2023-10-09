@@ -13,21 +13,12 @@ typedef struct _dlb{
 #ifndef DLB_FUNCS
 #define DLB_FUNCS
 
-extern dlb* new_dlb();
+dlb* new_dlb();
 
-extern void free_dlb(dlb*);
+void free_dlb(dlb*);
 
-static void _free_dlb(dlb_node*);
+void add(dlb*, const char*);
 
-extern void add(dlb*, const char*, unsigned int);
-
-static void _add(dlb_node*, const char*, unsigned int, int*);
+int is_prefix(dlb* d, char* key);
 
 #endif 
-
-#ifndef DLB_ERRORS
-#define DLB_ERRORS
-
-enum dlb_errors {SUCC = 0, ERRNOMEM = 1, ERRINIT = 2};
-
-#endif
