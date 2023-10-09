@@ -9,6 +9,7 @@ dlb* new_dlb()
     if (d = malloc(sizeof(dlb) == NULL))
         return NULL;
     d->count = 0;
+    d->root = NULL;
     return d;
 }
 
@@ -53,13 +54,15 @@ static dlb_node* _add(dlb_node* node, const char* key, unsigned int index, int* 
 {
     dlb_node* right = NULL;
     dlb_node* down = NULL;
-    char node_let = get_letter(curr);
+    char node_let = get_letter(node);
     char key_let = key[index];
 
-    if (key_let == '\0' && (node != NULL || node = new_dlb_node() != NULL) ) {
-        set_letter(node, '^');
-        *res = 1;
+    if (key_let == '\0' node != NULL && get_letter(node) != '^') {
         return node;
+    } else if (key_let == '\0' && down = new_dlb_node() != NULL) {
+        set_letter(down, '^');
+        set_right(down, node);
+        *res = 1;
     } else if (node == NULL && node = new_dlb_node() != NULL) {
         set_letter(node, key_let);
         set_down(node, _add(NULL, key, index, res));
@@ -75,7 +78,7 @@ static dlb_node* _add(dlb_node* node, const char* key, unsigned int index, int* 
         free_dlb_node(right);
         free_dlb_node(down);
     }
-    
+
     return node;
 }
 
