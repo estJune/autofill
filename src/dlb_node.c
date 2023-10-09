@@ -12,12 +12,6 @@ dlb_node* new_dlb_node()
     return new_node;
 }
 
-void free_dlb_node(dlb_node* node)
-{
-    (void) free(node);
-    node = NULL;
-}
-
 void set_right(dlb_node* node, dlb_node* right)
 {
     node->right = right;
