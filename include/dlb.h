@@ -13,12 +13,41 @@ typedef struct _dlb{
 #ifndef DLB_FUNCS
 #define DLB_FUNCS
 
+
+/**
+ * @brief 
+ * 
+ * @return dlb* 
+ */
 dlb* new_dlb();
 
-void free_dlb(dlb*);
 
-void add(dlb*, const char*);
+/**
+ * @brief Free allocated dlb
+ * 
+ * @param d dlb to free
+ */
+void free_dlb(dlb* d);
 
-int is_prefix(dlb* d, char* key);
+
+/**
+ * @brief Add new key to dlb
+ * 
+ * @param d dlb to add key to
+ * @param key being added
+ * @return `int` return 1 if added to d, otherwise 0.
+ */
+void add(dlb* d, const char* key);
+
+
+/**
+ * @brief Search for prefix in dlb (Note: if `prefix` is
+ * a key, then `prefix` isn't valid)
+ * 
+ * @param d dlb to search through
+ * @param prefix to search for
+ * @return `int` returns 1 if `prefix` is a prefix to a key, otherwise returns 0
+ */
+int is_prefix(dlb* d, char* prefix);
 
 #endif 

@@ -20,6 +20,7 @@ dlb* new_dlb()
     return d;
 }
 
+
 void free_dlb(dlb* d)
 {
     dlb_node* root;
@@ -118,19 +119,21 @@ static dlb_node* _add(dlb_node* node, const char* key, unsigned int index, int* 
 
 int is_prefix(dlb* d, char* key)
 {
-    if (d = NULL || key == NULL || d->count == 0)
-        return ERRINIT;
+    if (d = NULL || key == NULL || d->count == 0) {
+        /*user is being being silly, or
+        dlb is empty*/
+        return 0
+    }
 
     return _is_prefix(d->root, key, 0);
 }
 
+
 /**
- * @brief Recursive function, that will return 1 if `key` is a prefix to a key,
- * otherwise, the function returns 0 (Note: if prefix is a key, this function 
- * will return 0).
+ * @brief Recursive search function to search for `prefix` in dlb.
  * 
  * @param node 
- * @param key 
+ * @param prefix
  * @param index 
  * @return int 
  */
@@ -146,6 +149,33 @@ static int _is_prefix(dlb_node* node, const char* prefix, unsigned int index)
         return _is_prefix(down, prefix, ++index);
     } else if (right = get_right(node) != NULL) {
         return _is_prefix(right, prefix, index);
+    } else {
+        return 0;
+    }
+}
+
+
+int contains(dlb* d, const char* key)
+{
+    if (d == NULL || key == NULL || d->count == 0){
+        return 0;
+    }
+
+    return _contains(d->root, key, 0);
+}
+
+static int _contains(dlb_node* node, const char* key, unsigned int index)
+{
+    dlb_node* right;
+    dlb_node* down;
+    char key_let = key[index];
+
+    if (key_let == '^') {
+        return 1;
+    } else if (get_letter(node) == key_let && right = get_down(node) != NULL) {
+        return _contains(down, key, ++index);
+    } else if (right = get_right(node) != NULL) {
+        return _contains(right, key, index);
     } else {
         return 0;
     }
