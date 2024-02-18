@@ -362,21 +362,6 @@ Predictions:
 
 
 
-## Submission Guidelines:
-
-* **DO NOT** add the `./app/build/` diectory to your repository.
-
-	* Leave the `./app/build.gradle` file there, however
-
-
-* Be sure to remember to push the latest copy of your code back to your GitHub
-
-	repository before submitting. To submit, log into GradeScope from Canvas and
-
-	have GradeScope pull your repository from GitHub.
-
-
-
 ## Additional Notes:
 
 * Note that if your user history predictions contain a word that is also
@@ -418,16 +403,4 @@ Predictions:
 
 
 
-## Grading Rubric:
 
-| Feature | Points
-
-| ------- | ------:
-
-| `DLB` implemented as specified | 35
-
-| `UserHistory` implemented as specified | 35
-
-| `AutoCompleter` implemented as specified | 25
-
-| Proper assignment submission | 5
