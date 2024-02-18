@@ -57,6 +57,7 @@ int add(dlb* d, const char* key)
         return 0;
     }
     d->root = _add(d->root, key, 0, &res);
+    d->count = (res == 1) ? ++count : count;
     return res;
 }   
 
