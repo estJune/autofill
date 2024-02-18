@@ -36,7 +36,8 @@ void free_dlb(dlb* d)
 
 static void _free_dlb(dlb_node* curr)
 {
-    dlb_node* down, right;
+    dlb_node* down;
+    dlb_node* right;
     if (down = get_down(curr) != NULL) {
         _free_dlb(down);    
     }
@@ -57,7 +58,7 @@ int add(dlb* d, const char* key)
         return 0;
     }
     d->root = _add(d->root, key, 0, &res);
-    d->count = (res == 1) ? ++count : count;
+    d->count = (res == 1) ? ++d->count : d->count;
     return res;
 }   
 
@@ -83,21 +84,21 @@ static dlb_node* _add(dlb_node* node, const char* key, unsigned int index, int* 
     
     if (key_let == '\0') {
         /* case 1: at the end of the key (bc key_let == NUL terminator)... */
-        if (node_let == '^' ||  down = new_dlb_node() == NULL) {
+        if (node_let == '^' ||  (down = new_dlb_node()) == NULL) {
             /* make sure we aren't adding a key twice (check node_let != '^')*/
             return node;
         }
         set_letter(down, '^');
         set_right(down, node);
         *res = 1;
-    } else if (node == NULL && node = new_dlb_node() != NULL) {
+    } else if (node == NULL && (node = new_dlb_node()) != NULL) {
         /* case 2: new letter, not apart of any key */
         set_letter(node, key_let);
         set_down(node, _add(NULL, key, index, res));
-    } else if (node_let == key_let && down = get_down(node) != NULL) {
+    } else if (node_let == key_let && (down = get_down(node)) != NULL) {
         /* case 3: key_let is apart of another key */
         set_down(node, _add(down, key, ++index, res));
-    } else if (node_let != key_let && right = get_right(node) != NULL) {
+    } else if (node_let != key_let && (right = get_right(node)) != NULL) {
         /* case 4: search for key_let in current radix list */
         set_right(node, _add(right, key, index, res));
     } else if (right = new_dlb_node() != NULL) {
@@ -123,7 +124,7 @@ int is_prefix(dlb* d, char* key)
     if (d = NULL || key == NULL || d->count == 0) {
         /*user is being being silly, or
         dlb is empty*/
-        return 0
+        return 0;
     }
 
     return _is_prefix(d->root, key, 0);
@@ -146,7 +147,7 @@ static int _is_prefix(dlb_node* node, const char* prefix, unsigned int index)
 
     if (pref_let == '\0' && (get_down(node) != NULL || get_right(node) != NULL)) {
         return 1;
-    } else if (get_letter(node) == pref_let && down = get_down(node) != NULL) {
+    } else if (get_letter(node) == pref_let && (down = get_down(node)) != NULL) {
         return _is_prefix(down, prefix, ++index);
     } else if (right = get_right(node) != NULL) {
         return _is_prefix(right, prefix, index);
@@ -173,7 +174,7 @@ static int _contains(dlb_node* node, const char* key, unsigned int index)
 
     if (key_let == '^') {
         return 1;
-    } else if (get_letter(node) == key_let && right = get_down(node) != NULL) {
+    } else if (get_letter(node) == key_let && (right = get_down(node)) != NULL) {
         return _contains(down, key, ++index);
     } else if (right = get_right(node) != NULL) {
         return _contains(right, key, index);
