@@ -1,16 +1,4 @@
-# CS1501 Project 2
-
-
-
-## Goal:
-
-To gain a better understanding of search algorithms and symbol tables by
-
-implementing an autocompletion engine.
-
-
-
-## Background:
+# Background:
 
 In order to make typing on a mobile device quick and easy, an autocomplete
 
