@@ -109,7 +109,7 @@ static dlb_node* _add(dlb_node* node, const char* key, unsigned int index, int* 
         set_down(right, add(NULL, key, ++index, res));
     } else {
         /*default: we either are adding a key that is already in DLB, or
-        malloc() returned NULL at some point, need to clean up nodes that
+        malloc() returned NULL at some point; need to clean up nodes that
         were allocated.*/
         free(right);
         free(down);
@@ -181,4 +181,9 @@ static int _contains(dlb_node* node, const char* key, unsigned int index)
     } else {
         return 0;
     }
+}
+
+int search_by_char(char next)
+{
+    return 0;
 }
