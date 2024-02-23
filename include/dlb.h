@@ -4,8 +4,9 @@
 #define DLB
 
 typedef struct _dlb{
-    dlb_node* root;
-    unsigned long count;
+    dlb_node* root;         // Root node
+    unsigned long count;    // Number of keys in dlb
+    dlb_node* curr_key;     // Current by-character search node 
 } dlb;
 
 #endif
@@ -15,7 +16,7 @@ typedef struct _dlb{
 
 
 /**
- * @brief 
+ * @brief Create a new De La Brandais Trie (dlb)
  * 
  * @return dlb* 
  */
@@ -38,6 +39,16 @@ void free_dlb(dlb* d);
  * @return `int` return 1 if added to d, otherwise 0.
  */
 int add(dlb* d, const char* key);
+
+
+/**
+ * @brief Check if the dlb contains the given key
+ * 
+ * @param d dlb to search
+ * @param key searching for
+ * @return `int` 1 if the key is present in d, otherwise 0
+*/
+int contains(dlb* d, const char* key);
 
 
 /**
@@ -66,27 +77,27 @@ int search_by_char(char next);
 /**
  * Reset the state of the current by-character search
 */
-void reset_by_char();
+void reset_by_char(dlb* d);
 
 /**
- * @brief Suggest up to 5 words from the dictionary based on the current by-character search.
+ * @brief Suggest up to `n` key from the dictionary based on the current by-character search.
  * 
- * @return * char[] List of up to 5 words that are prefixed by the current by-character search. 
+ * X Idea 1: everytime the user chooses a word, it will move up one place in the current radix it was chosen
+ *      - con: can't differentiate between keys that have been chosen more the number of keys in the current radix
+ *              (e.g. radix := k1, k2, k3 and we have chosen k1 four times and chosen k2 two times., once we choose 
+ *               k2 for a third time, it will be the shown as the most frequent.)
+ * 
+ * @param buf array to add keys to
+ * @param n number of keys to suggest at most
  */
-*char[] suggest();
+void suggest(dlb* d, char* buf[], int n);
 
 /**
- * @brief List all of the words currently stored in the dictionary.
+ * @brief List all of the keys currently stored in the dlb.
  * 
- * @return * char[] List of all valid words in dictionary.
+ * @param buf array to add keys to
  */
-*char[] traverse();
+void traverse(dlb* d, char* buf[]);
 
-/**
- * @brief Count the number of words in the dictionary.
- * 
- * @return int, the number of (distinct) words in the dictionary.
- */
-int count();
 
 #endif 

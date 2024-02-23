@@ -17,6 +17,7 @@ dlb* new_dlb()
         return NULL;
     d->count = 0;
     d->root = NULL;
+    d->curr_key = NULL;
     return d;
 }
 
@@ -51,10 +52,10 @@ static void _free_dlb(dlb_node* curr)
 
 int add(dlb* d, const char* key)
 {
-    /*result of `_add()`*/
+    // result of `_add()`
     int res = 0;
     if (key == NULL || d == NULL) {
-        /*user is being being silly*/
+        // user is being being silly
         return 0;
     }
     d->root = _add(d->root, key, 0, &res);
@@ -106,7 +107,7 @@ static dlb_node* _add(dlb_node* node, const char* key, unsigned int index, int* 
         the remainding recursive calls will hit case 2, then finally case 1*/
         set_letter(right, key_let);
         set_right(node, right);
-        set_down(right, add(NULL, key, ++index, res));
+        set_down(right, _add(NULL, key, ++index, res));
     } else {
         /*default: we either are adding a key that is already in DLB, or
         malloc() returned NULL at some point; need to clean up nodes that
@@ -126,6 +127,10 @@ int is_prefix(dlb* d, char* key)
         dlb is empty*/
         return 0;
     }
+    // dlb_node* radix_let = NULL;
+    // dlb_node* key_let = NULL;
+    // Idea: Try an iterative approach to reduce stack frame overhead
+
 
     return _is_prefix(d->root, key, 0);
 }
@@ -162,7 +167,6 @@ int contains(dlb* d, const char* key)
     if (d == NULL || key == NULL || d->count == 0){
         return 0;
     }
-
     return _contains(d->root, key, 0);
 }
 
@@ -186,4 +190,27 @@ static int _contains(dlb_node* node, const char* key, unsigned int index)
 int search_by_char(char next)
 {
     return 0;
+}
+
+void reset_by_char(dlb* d){}
+
+
+void suggest(dlb* d, char* buf[], int in)
+{
+
+}
+
+void traverse(dlb* d, char* buf[])
+{
+    /**
+     * Option 1: User passes an empty buffer
+    */
+    dlb_node* radix_node;
+    dlb_node* key_node;
+
+    for (radix_node = d->root; radix_node != NULL; radix_node = radix_node->right) {
+        for (key_node = radix_node->down; key_node != NULL; key_node = key_node->down) {
+
+        }
+    }
 }

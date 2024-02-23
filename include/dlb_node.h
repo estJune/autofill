@@ -11,10 +11,16 @@
 #ifndef DLBNODE
 #define DLBNODE
 
+/**
+ * @brief Do we need to have a terminating node ('\0') if keys only
+ * have a positive frequency?
+ * 
+ */
 typedef struct _dlb_node{
-    char let;
-    struct _dlb_node* right;
-    struct _dlb_node* down;
+    char let;                   // Symbol in key
+    long freq;                  // Frequency of this prefix/key
+    struct _dlb_node* right;    // Next symbol in radix
+    struct _dlb_node* down;     // Next radix in key
 } dlb_node;
 
 #endif
