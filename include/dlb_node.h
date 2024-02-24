@@ -31,6 +31,6 @@ typedef struct _dlb_node{
 /**
  * @brief Create a new dlb node
 */
-dlb_node* new_dlb_node();
+dlb_node* new_dlb_node(char);
 
 #endif
