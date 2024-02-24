@@ -3,22 +3,32 @@
 #include "dlb.h"
 
 
-/* private function prototypes*/
-
-static dlb_node* _add(dlb_node* node, const char* key, unsigned int index, int* res);
-
-static void _free_dlb(dlb_node* curr);
-
 
 dlb* new_dlb()
 {
     dlb* d;
-    if (d = malloc(sizeof(dlb) == NULL))
+    if ((d = malloc(sizeof(dlb)) == NULL))
         return NULL;
-    d->count = 0;
+    d->key_count = 0;
+    d->char_count = 0;
     d->root = NULL;
     d->curr_key = NULL;
     return d;
+}
+
+
+static void _free_dlb(dlb_node* curr)
+{
+    dlb_node* down;
+    dlb_node* right;
+    if ((down = curr->down) != NULL) {
+        _free_dlb(down);    
+    }
+    if ((right = curr->right) != NULL) {
+        _free_dlb(right); 
+    }
+    (void) free(curr); 
+    curr = NULL;
 }
 
 
@@ -35,39 +45,12 @@ void free_dlb(dlb* d)
     d = NULL;
 }
 
-static void _free_dlb(dlb_node* curr)
-{
-    dlb_node* down;
-    dlb_node* right;
-    if (down = get_down(curr) != NULL) {
-        _free_dlb(down);    
-    }
-    if (right = get_right(curr) != NULL) {
-        _free_dlb(right); 
-    }
-    (void) free(curr); 
-    curr = NULL;
-}
-
-
-int add(dlb* d, const char* key)
-{
-    // result of `_add()`
-    int res = 0;
-    if (key == NULL || d == NULL) {
-        // user is being being silly
-        return 0;
-    }
-    d->root = _add(d->root, key, 0, &res);
-    d->count = (res == 1) ? ++d->count : d->count;
-    return res;
-}   
 
 /**
- * @brief Recursive function, that will return a `dlb_node*` to either be the next
- * symbol in a radix list, `set_right()`. or the next symbol in a key, `set_down()`.
- * Designing the `add()` this way allows our scope to be that of our adjacent nodes,
- * and our current symbol.
+ * @brief Recursive helper insert function, that will return a `dlb_node*` to either be the next
+ * symbol in a radix list, `node->right = ?`. or the next symbol in the key, `node->down = ?`.
+ * Designing the insert this way allows our scope to be that of our adjacent nodes,
+ * and our current symbol, which makese it easier to handle when `malloc() == NULL`.
  * 
  * @param node current node in dlb
  * @param key key to add
@@ -80,34 +63,32 @@ static dlb_node* _add(dlb_node* node, const char* key, unsigned int index, int* 
 {
     dlb_node* right = NULL;
     dlb_node* down = NULL;
-    char node_let = (node != NULL) ? get_letter(node) : '\0';
+    char node_let = (node != NULL) ? node->let : '\0';
     char key_let = key[index];
     
     if (key_let == '\0') {
-        /* case 1: at the end of the key (bc key_let == NUL terminator)... */
-        if (node_let == '^' ||  (down = new_dlb_node()) == NULL) {
-            /* make sure we aren't adding a key twice (check node_let != '^')*/
+        // case 1: at the end of the key
+        if (node_let == '\0' ||  (down = new_dlb_node('\0')) == NULL) {
+            /* Make sure we aren't adding a key twice (check node_let != '\0')
+            or we run out of memory, `malloc() == NULL`*/
             return node;
         }
-        set_letter(down, '^');
-        set_right(down, node);
+        down->right = node;
         *res = 1;
-    } else if (node == NULL && (node = new_dlb_node()) != NULL) {
+    } else if (node == NULL && (node = new_dlb_node(key_let)) != NULL) {
         /* case 2: new letter, not apart of any key */
-        set_letter(node, key_let);
-        set_down(node, _add(NULL, key, index, res));
-    } else if (node_let == key_let && (down = get_down(node)) != NULL) {
+        node->down = _add(NULL, key, index, res);
+    } else if (node_let == key_let && (down = node->down) != NULL) {
         /* case 3: key_let is apart of another key */
-        set_down(node, _add(down, key, ++index, res));
-    } else if (node_let != key_let && (right = get_right(node)) != NULL) {
+        node->down = _add(down, key, ++index, res);
+    } else if (node_let != key_let && (right = node->right) != NULL) {
         /* case 4: search for key_let in current radix list */
-        set_right(node, _add(right, key, index, res));
-    } else if (right = new_dlb_node() != NULL) {
+        node->right = _add(right, key, index, res);
+    } else if (right = new_dlb_node(key_let) != NULL) {
         /* case 5: key_let is not in current radix list, must add it ... 
         the remainding recursive calls will hit case 2, then finally case 1*/
-        set_letter(right, key_let);
-        set_right(node, right);
-        set_down(right, _add(NULL, key, ++index, res));
+        node->right = right;
+        right->down, _add(NULL, key, ++index, res);
     } else {
         /*default: we either are adding a key that is already in DLB, or
         malloc() returned NULL at some point; need to clean up nodes that
@@ -120,77 +101,108 @@ static dlb_node* _add(dlb_node* node, const char* key, unsigned int index, int* 
 }
 
 
-int is_prefix(dlb* d, char* key)
+int add(dlb* d, const char* key)
 {
-    if (d = NULL || key == NULL || d->count == 0) {
-        /*user is being being silly, or
-        dlb is empty*/
+    int res = 0;
+    // If dlb is empty, or user is being dumb, return 0.
+    if (key == NULL || d == NULL) 
         return 0;
-    }
-    // dlb_node* radix_let = NULL;
-    // dlb_node* key_let = NULL;
-    // Idea: Try an iterative approach to reduce stack frame overhead
 
-
-    return _is_prefix(d->root, key, 0);
-}
+    /** 
+     * Recursively add key to dlb (Note: `res` is used see if the
+     * key was succesfully added or not.
+    */
+    d->root = _add(d->root, key, 0, &res);
+    d->key_count = (res == 1) ? ++d->key_count : d->key_count;
+    return res;
+}   
 
 
 /**
- * @brief Recursive search function to search for `prefix` in dlb.
+ * @brief Iterative helper search function for `is_prefix()` and `contains()`.
  * 
- * @param node 
- * @param prefix
- * @param index 
- * @return int 
- */
-static int _is_prefix(dlb_node* node, const char* prefix, unsigned int index)
+ * @param root the root node
+ * @param key key searching for
+ * 
+ * @return `dlb_node*` if key is present, then return the last node
+ * looked at (node that holds some symbol or a terminator). Otherwise,
+ * return `NULL`.
+*/
+static dlb_node* _search_for_key(dlb_node* root, char* key)
 {
-    dlb_node* right = NULL;
-    dlb_node* down = NULL;
-    char pref_let = prefix[index];
+    int index = 0;                          // Current position in key
+    char key_let = key[index];              // Current symbol in key
+    dlb_node* curr_node = root;             // Current node
+    char node_let = curr_node->let;         // Current node's symbol
 
-    if (pref_let == '\0' && (get_down(node) != NULL || get_right(node) != NULL)) {
-        return 1;
-    } else if (get_letter(node) == pref_let && (down = get_down(node)) != NULL) {
-        return _is_prefix(down, prefix, ++index);
-    } else if (right = get_right(node) != NULL) {
-        return _is_prefix(right, prefix, index);
-    } else {
-        return 0;
+    /**
+     * If symbols match, then continue to next symbol in key and search
+     * next radix. Else if radix is not empty, contiue searching radix
+     * for current symbol in key. Otherwise, the key is not in dlb.
+    */
+    while(key_let != '\0') {                    
+        if (node_let == key_let && curr_node->down != NULL) {              
+            curr_node = curr_node->down;
+            node_let = curr_node->let;
+            key_let = key[++index];
+        } else if (curr_node->right != NULL){   
+            curr_node = curr_node->right;
+        } else {                                
+            return NULL;
+        }
     }
+
+    return curr_node;
+}
+
+
+int is_prefix(dlb* d, char* key)
+{
+    // If dlb is empty, or user is being dumb, return 0.
+    if (d == NULL || key == NULL || d->key_count == 0) 
+        return 0;
+    
+    // Search for key in dlb
+    dlb_node* ret_node = _search_for_key(d->root, key);
+
+    /** 
+     * If the returned node's symbol is not a terminator (ret_node != '\0')
+     * or the radix is not empty (ret_node->right != NULL), then the key
+     * is a prefix. Otherwise, key is not a prefix.
+    */
+    if (ret_node->let != '\0' || ret_node->right != NULL)
+        return 1;
+
+    return 0;
 }
 
 
 int contains(dlb* d, const char* key)
 {
-    if (d == NULL || key == NULL || d->count == 0){
+    // If dlb is empty, or user is being dumb, return 0.
+    if (d == NULL || key == NULL || d->key_count == 0){
         return 0;
     }
-    return _contains(d->root, key, 0);
-}
 
-static int _contains(dlb_node* node, const char* key, unsigned int index)
-{
-    dlb_node* right;
-    dlb_node* down;
-    char key_let = key[index];
+    // Search for key in dlb
+    dlb_node* ret_node = _search_for_key(d->root, key);
 
-    if (key_let == '^') {
+    /**
+     * If the returned node's symbol is a terminator (ret_node->let == '\0'),
+     * then the key is in the dlb. Otherwise, key is not in dlb
+    */
+    if (ret_node->let == '\0')
         return 1;
-    } else if (get_letter(node) == key_let && (right = get_down(node)) != NULL) {
-        return _contains(down, key, ++index);
-    } else if (right = get_right(node) != NULL) {
-        return _contains(right, key, index);
-    } else {
-        return 0;
-    }
+
+    return 0;
 }
+
 
 int search_by_char(char next)
 {
     return 0;
 }
+
 
 void reset_by_char(dlb* d){}
 
@@ -200,17 +212,17 @@ void suggest(dlb* d, char* buf[], int in)
 
 }
 
+
 void traverse(dlb* d, char* buf[])
 {
     /**
-     * Option 1: User passes an empty buffer
+     * Option 1: create a buffer with the length of the longest key, use it as a buffer
+     * to append keys to a single level buffer that is just single string of keys (e.g
+     * buf = [k,e,y,1,\n,k,e,y,2,\n,]). After which we call strtok() to return an array
+     * of pointers for convenience. We can preallocate the buffer of size (number of keys
+     * x average length string)
+     * 
+     *  pros: reduce number of malloc() if we did an array of strings (*argv[])
     */
-    dlb_node* radix_node;
-    dlb_node* key_node;
-
-    for (radix_node = d->root; radix_node != NULL; radix_node = radix_node->right) {
-        for (key_node = radix_node->down; key_node != NULL; key_node = key_node->down) {
-
-        }
-    }
+    
 }
