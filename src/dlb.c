@@ -164,6 +164,8 @@ int is_prefix(dlb* d, char* key)
     
     // Search for key in dlb
     dlb_node* ret_node = _search_for_key(d->root, key);
+    if (ret_node == NULL)
+        return 0;
 
     /** 
      * If the returned node's symbol is not a terminator (ret_node != '\0')
@@ -186,6 +188,8 @@ int contains(dlb* d, const char* key)
 
     // Search for key in dlb
     dlb_node* ret_node = _search_for_key(d->root, key);
+    if (ret_node == NULL)
+        return 0;
 
     /**
      * If the returned node's symbol is a terminator (ret_node->let == '\0'),
