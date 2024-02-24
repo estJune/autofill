@@ -4,9 +4,10 @@
 #define DLB
 
 typedef struct _dlb{
-    dlb_node* root;         // Root node
-    unsigned long count;    // Number of keys in dlb
-    dlb_node* curr_key;     // Current by-character search node 
+    dlb_node* root;             // Root node
+    unsigned long key_count;    // Number of keys in dlb
+    unsigned long char_count;   // Number of characters (This distinguishes between keys)
+    dlb_node* curr_key;         // Current by-character search node 
 } dlb;
 
 #endif
@@ -53,7 +54,8 @@ int contains(dlb* d, const char* key);
 
 /**
  * @brief Search for prefix in dlb (Note: if `prefix` is
- * a key, then `prefix` isn't valid)
+ * a key and not a prefix to any other key, then 
+ * `prefix` isn't valid)
  * 
  * @param d dlb to search through
  * @param prefix to search for
